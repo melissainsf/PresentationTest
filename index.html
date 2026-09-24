@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Revenue Retention Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --page: #f3f4f2;
+  --surface: #fcfcfb;
+  --ink: #111312;
+  --ink-2: #505552;
+  --muted: #858a86;
+  --grid: #e3e5e1;
+  --axis: #c3c5bf;
+  --border: rgba(17,19,18,.10);
+  --hover: rgba(17,19,18,.04);
+  --accent: #2a78d6;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --bar-neutral: #6b7a8c;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --critical-text: #b42f2f;
+  --div-pos: #2a78d6;
+  --div-neg: #e34948;
+  --mid: #e6e7e3;
+  --focus: #2a78d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0e0f0f;
+    --surface: #181a19;
+    --ink: #f2f3f1;
+    --ink-2: #c0c4bf;
+    --muted: #8a8e8a;
+    --grid: #2a2d2b;
+    --axis: #3a3d3b;
+    --border: rgba(255,255,255,.10);
+    --hover: rgba(255,255,255,.05);
+    --accent: #3987e5;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --bar-neutral: #7f8ea0;
+    --good-text: #2dbb2d;
+    --critical-text: #e66767;
+    --div-pos: #3987e5;
+    --div-neg: #e66767;
+    --mid: #383835;
+    --focus: #6da7ec;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0e0f0f;
+  --surface: #181a19;
+  --ink: #f2f3f1;
+  --ink-2: #c0c4bf;
+  --muted: #8a8e8a;
+  --grid: #2a2d2b;
+  --axis: #3a3d3b;
+  --border: rgba(255,255,255,.10);
+  --hover: rgba(255,255,255,.05);
+  --accent: #3987e5;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --bar-neutral: #7f8ea0;
+  --good-text: #2dbb2d;
+  --critical-text: #e66767;
+  --div-pos: #3987e5;
+  --div-neg: #e66767;
+  --mid: #383835;
+  --focus: #6da7ec;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 14px/1.5 "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-inline: 16px;
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2 { margin: 0; text-wrap: balance; }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 15px; font-weight: 600; }
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sub { color: var(--ink-2); font-size: 13px; }
+
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+header .titles { display: grid; gap: 4px; }
+.sample-tag { display: inline-flex; align-items: center; gap: 6px; }
+.sample-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--serious); }
+
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button {
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--ink-2);
+  background: none; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer;
+}
+.seg button:hover { background: var(--hover); color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+button:focus-visible, tr[tabindex]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.scope { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px 6px 3px 12px;
+}
+.chip button { font: inherit; border: 0; background: var(--hover); color: var(--ink-2); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; line-height: 1; }
+.chip.all { padding-right: 12px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.tile .label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.tile.hero .value { font-size: 40px; }
+.tile .foot { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.delta { font-weight: 600; }
+.delta.up { color: var(--good-text); }
+.delta.down { color: var(--critical-text); }
+.delta.flat { color: var(--muted); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
+.chart { width: 100%; min-height: 250px; }
+.chart svg { display: block; overflow: visible; }
+.chart text { font-family: inherit; }
+
+.table-wrap { overflow-x: auto; margin-inline: -16px; padding-inline: 16px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 820px; }
+th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+th { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--hover); }
+tbody tr.focused { background: var(--hover); box-shadow: inset 3px 0 0 var(--accent); }
+tbody tr.focused td:first-child { padding-left: 10px; }
+tfoot td { font-weight: 600; border-bottom: 0; border-top: 1px solid var(--axis); }
+td.seg-name { font-weight: 600; }
+td .n { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.nrr-cell { display: inline-flex; align-items: center; gap: 10px; }
+.nrr-cell .v { min-width: 3.6em; text-align: right; }
+.flag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; }
+.flag.bad { color: var(--critical-text); }
+
+.defs { font-size: 12.5px; color: var(--ink-2); display: grid; gap: 6px; max-width: 80ch; }
+.defs dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; }
+.defs dt { font-weight: 600; color: var(--ink); }
+.defs dd { margin: 0; }
+@media (max-width: 560px) { .defs dl { grid-template-columns: 1fr; } .defs dd { margin-bottom: 6px; } }
+
+#tip {
+  position: fixed; pointer-events: none; z-index: 10; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.45;
+  box-shadow: 0 6px 20px rgba(0,0,0,.14); min-width: 150px; font-variant-numeric: tabular-nums;
+}
+#tip .t { font-weight: 600; margin-bottom: 4px; }
+#tip .r { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+#tip .r b { color: var(--ink); font-weight: 600; }
+#tip .r .k { display: inline-flex; align-items: center; gap: 6px; }
+#tip .r .k i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+@media (prefers-reduced-motion: no-preference) { .seg button, tbody tr { transition: background-color .12s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="titles">
+      <span class="eyebrow sample-tag">Sample data · fictional accounts and people</span>
+      <h1>Revenue Retention</h1>
+      <span class="sub" id="periodLabel"></span>
+    </div>
+    <div class="seg" role="group" aria-label="Period" id="periodSeg">
+      <button type="button" id="p3" data-p="3">Last quarter</button>
+      <button type="button" id="p6" data-p="6">Last 6 months</button>
+      <button type="button" id="p12" data-p="12">Last 12 months</button>
+    </div>
+  </header>
+
+  <div class="scope" id="scope"></div>
+
+  <section class="kpis" id="kpis" aria-label="Headline metrics"></section>
+
+  <div class="grid2">
+    <section class="card">
+      <div class="card-head">
+        <h2>MRR bridge</h2>
+        <span class="sub">Starting cohort only; new logos excluded</span>
+      </div>
+      <div class="chart" id="bridge"></div>
+    </section>
+    <section class="card">
+      <div class="card-head">
+        <h2>Trailing-12-month retention</h2>
+        <div class="legend">
+          <span><i style="background:var(--series-1)"></i>NRR</span>
+          <span><i style="background:var(--series-2)"></i>GRR</span>
+        </div>
+      </div>
+      <div class="chart" id="trend"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Breakdown</h2>
+      <div class="seg" role="group" aria-label="Break down by" id="dimSeg">
+        <button type="button" id="d-am" data-d="am">Account manager</button>
+        <button type="button" id="d-stage" data-d="stage">Stage</button>
+        <button type="button" id="d-industry" data-d="industry">Industry</button>
+      </div>
+    </div>
+    <span class="sub">Select a row to scope the tiles and charts above to that segment.</span>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th id="dimHead">Segment</th>
+            <th>Starting MRR</th>
+            <th>NRR</th>
+            <th>GRR</th>
+            <th>Logo churn</th>
+            <th>Revenue churn</th>
+            <th>Upsell $</th>
+            <th>Upsell %</th>
+            <th>Accounts upsold</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+        <tfoot id="total"></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="defs" aria-label="Definitions">
+    <span class="eyebrow">How these are calculated</span>
+    <dl>
+      <dt>Cohort</dt><dd>Accounts paying at the start of the period. Their MRR at the start is compared with their MRR at the end. Accounts that signed during the period are left out of every metric below.</dd>
+      <dt>NRR</dt><dd>(Starting MRR + upsell − contraction − churned MRR) ÷ starting MRR.</dd>
+      <dt>GRR</dt><dd>(Starting MRR − contraction − churned MRR) ÷ starting MRR. Upsell is excluded, so GRR can't exceed 100%.</dd>
+      <dt>Logo churn</dt><dd>Accounts that went to $0 ÷ accounts in the starting cohort. Revenue churn is the churned MRR ÷ starting MRR.</dd>
+      <dt>Upsell $</dt><dd>Net MRR increase on accounts that ended the period higher than they started. Shown as monthly MRR; ARR is ×12.</dd>
+      <dt>Upsell %</dt><dd>Upsell $ ÷ starting MRR. "Accounts upsold" is the share of the cohort that grew.</dd>
+      <dt>Trend</dt><dd>Each point is a trailing 12-month window ending that month, calculated the same way.</dd>
+    </dl>
+  </section>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+(() => {
+  // ---------- Sample data: seeded, fictional, deterministic ----------
+  function rng(seed) {
+    return () => {
+      seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  const R = rng(20260924);
+  const between = (a, b) => a + R() * (b - a);
+  const pick = (weights) => {
+    const total = Object.values(weights).reduce((s, w) => s + w, 0);
+    let x = R() * total;
+    for (const [k, w] of Object.entries(weights)) { if ((x -= w) < 0) return k; }
+    return Object.keys(weights)[0];
+  };
+
+  const N_MONTHS = 26;               // index 0 = Jul 2024, index 25 = Aug 2026
+  const LAST = N_MONTHS - 1;
+  const monthName = (i) => new Date(2024, 6 + i, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' });
+  const monthShort = (i) => new Date(2024, 6 + i, 1).toLocaleString('en-US', { month: 'short' });
+
+  const STAGES = {
+    'Enterprise': { w: 15, mrr: [18000, 42000], churn: .004, exp: .035, con: .012 },
+    'Mid Market': { w: 30, mrr: [7000, 16000], churn: .008, exp: .045, con: .015 },
+    'Scale Up':   { w: 30, mrr: [3000, 7500],  churn: .013, exp: .055, con: .020 },
+    'Startup':    { w: 25, mrr: [1000, 3200],  churn: .022, exp: .050, con: .025 },
+  };
+  // Fictional account managers. Factors shape the story the demo tells.
+  const AMS = {
+    'Jordan Reyes':    { w: 1, exp: 1.35, churn: 0.70 },
+    'Priya Natarajan': { w: 1, exp: 1.10, churn: 0.85 },
+    'Sam Okafor':      { w: 1, exp: 0.95, churn: 1.00 },
+    'Taylor Brooks':   { w: 1, exp: 0.80, churn: 1.35 },
+    'Morgan Chen':     { w: 1, exp: 1.05, churn: 1.15 },
+  };
+  const INDUSTRIES = {
+    'Fintech':               { w: 20, exp: 1.15, churn: 0.90 },
+    'Healthcare':            { w: 15, exp: 0.90, churn: 0.70 },
+    'B2B SaaS':              { w: 25, exp: 1.20, churn: 1.10 },
+    'Cybersecurity':         { w: 15, exp: 1.10, churn: 0.80 },
+    'Manufacturing':         { w: 12, exp: 0.75, churn: 1.00 },
+    'Professional Services': { w: 13, exp: 0.85, churn: 1.40 },
+  };
+  const round50 = (x) => Math.max(500, Math.round(x / 50) * 50);
+
+  const accounts = [];
+  for (let i = 0; i < 160; i++) {
+    const stage = pick(Object.fromEntries(Object.entries(STAGES).map(([k, v]) => [k, v.w])));
+    const am = pick(Object.fromEntries(Object.entries(AMS).map(([k, v]) => [k, v.w])));
+    const industry = pick(Object.fromEntries(Object.entries(INDUSTRIES).map(([k, v]) => [k, v.w])));
+    const s = STAGES[stage], a = AMS[am], ind = INDUSTRIES[industry];
+    const pChurn = s.churn * a.churn * ind.churn;
+    const pExp = s.exp * a.exp * ind.exp;
+    const pCon = s.con * (2 - a.exp) * 0.9;
+    const joined = R() < 0.72 ? 0 : 1 + Math.floor(R() * LAST);
+    const mrr = new Array(N_MONTHS).fill(0);
+    let cur = 0, gone = false;
+    for (let m = 0; m < N_MONTHS; m++) {
+      if (m < joined || gone) { mrr[m] = 0; continue; }
+      if (m === joined) { cur = round50(between(s.mrr[0], s.mrr[1])); }
+      else {
+        const x = R();
+        if (x < pChurn) { gone = true; mrr[m] = 0; continue; }
+        else if (x < pChurn + pExp) cur = round50(cur * (1 + between(0.10, 0.45)));
+        else if (x < pChurn + pExp + pCon) cur = round50(cur * (1 - between(0.10, 0.30)));
+      }
+      mrr[m] = cur;
+    }
+    accounts.push({ id: i, am, stage, industry, mrr });
+  }
+
+  // ---------- Metrics ----------
+  function metrics(list, s, e) {
+    const m = { start: 0, exp: 0, con: 0, churn: 0, n: 0, churned: 0, upsold: 0 };
+    for (const a of list) {
+      const x = a.mrr[s], y = a.mrr[e];
+      if (x <= 0) continue;
+      m.n++; m.start += x;
+      if (y <= 0) { m.churn += x; m.churned++; }
+      else if (y > x) { m.exp += y - x; m.upsold++; }
+      else if (y < x) { m.con += x - y; }
+    }
+    m.end = m.start + m.exp - m.con - m.churn;
+    const d = m.start || 1;
+    m.nrr = m.end / d;
+    m.grr = (m.start - m.con - m.churn) / d;
+    m.logoChurn = m.n ? m.churned / m.n : 0;
+    m.revChurn = m.churn / d;
+    m.upsellPct = m.exp / d;
+    m.upsoldPct = m.n ? m.upsold / m.n : 0;
+    return m;
+  }
+
+  // ---------- Formatting ----------
+  const money = (v) => {
+    const a = Math.abs(v);
+    if (a >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M';
+    if (a >= 1e4) return '$' + (v / 1e3).toFixed(0) + 'K';
+    if (a >= 1e3) return '$' + (v / 1e3).toFixed(1) + 'K';
+    return '$' + Math.round(v).toLocaleString();
+  };
+  const pct = (v, dp = 1) => (v * 100).toFixed(dp) + '%';
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---------- State ----------
+  const DIMS = { am: 'Account manager', stage: 'Stage', industry: 'Industry' };
+  const store = {
+    get(k, d) { try { return localStorage.getItem('rrb:' + k) ?? d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('rrb:' + k, v); } catch {} },
+  };
+  const state = {
+    period: +store.get('period', 12) || 12,
+    dim: DIMS[store.get('dim', 'stage')] ? store.get('dim', 'stage') : 'stage',
+    focus: null, // { dim, value }
+  };
+  if (![3, 6, 12].includes(state.period)) state.period = 12;
+
+  const scoped = () => state.focus ? accounts.filter((a) => a[state.focus.dim] === state.focus.value) : accounts;
+
+  // ---------- Tooltip ----------
+  const tip = document.getElementById('tip');
+  function showTip(html, ev) {
+    tip.innerHTML = html; tip.hidden = false;
+    const r = tip.getBoundingClientRect();
+    let x = ev.clientX + 14, y = ev.clientY + 14;
+    if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+    if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+    tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  }
+  const hideTip = () => { tip.hidden = true; };
+
+  // ---------- Render: header, scope, KPIs ----------
+  function render() {
+    for (const b of document.querySelectorAll('#periodSeg button')) b.setAttribute('aria-pressed', +b.dataset.p === state.period);
+    for (const b of document.querySelectorAll('#dimSeg button')) b.setAttribute('aria-pressed', b.dataset.d === state.dim);
+
+    const P = state.period, e = LAST, s = LAST - P;
+    document.getElementById('periodLabel').textContent =
+      `${monthName(s + 1)} – ${monthName(e)} · compared with the prior ${P} months`;
+
+    const scope = document.getElementById('scope');
+    scope.innerHTML = 'Showing' + (state.focus
+      ? ` <span class="chip">${esc(DIMS[state.focus.dim])}: ${esc(state.focus.value)} <button type="button" id="clearFocus" aria-label="Show all accounts">×</button></span>`
+      : ' <span class="chip all">All accounts</span>');
+    const cf = document.getElementById('clearFocus');
+    if (cf) cf.onclick = () => { state.focus = null; render(); };
+
+    const list = scoped();
+    const cur = metrics(list, s, e);
+    const prev = metrics(list, s - P, e - P);
+    renderKpis(cur, prev);
+    renderBridge(cur);
+    renderTrend(list);
+    renderTable(s, e);
+  }
+
+  function deltaHtml(now, before, { goodUp = true, kind = 'pp' } = {}) {
+    let diff, text;
+    if (kind === 'pp') { diff = (now - before) * 100; text = (diff >= 0 ? '+' : '−') + Math.abs(diff).toFixed(1) + ' pts'; }
+    else { diff = before ? (now - before) / before * 100 : 0; text = (diff >= 0 ? '+' : '−') + Math.abs(diff).toFixed(0) + '%'; }
+    const flat = Math.abs(diff) < 0.05;
+    const cls = flat ? 'flat' : ((diff > 0) === goodUp ? 'up' : 'down');
+    const arrow = flat ? '→' : diff > 0 ? '▲' : '▼';
+    return `<span class="delta ${cls}">${arrow} ${text}</span>`;
+  }
+
+  function renderKpis(c, p) {
+    const tiles = [
+      { label: 'Net revenue retention', value: pct(c.nrr), hero: true, delta: deltaHtml(c.nrr, p.nrr), foot: `${money(c.start)} → ${money(c.end)}` },
+      { label: 'Gross revenue retention', value: pct(c.grr), delta: deltaHtml(c.grr, p.grr), foot: `${money(c.con + c.churn)} lost` },
+      { label: 'Logo churn rate', value: pct(c.logoChurn), delta: deltaHtml(c.logoChurn, p.logoChurn, { goodUp: false }), foot: `${c.churned} of ${c.n} accounts · ${pct(c.revChurn)} of MRR` },
+      { label: 'Upsell $ (MRR)', value: money(c.exp), delta: deltaHtml(c.exp, p.exp, { kind: 'rel' }), foot: `${money(c.exp * 12)} ARR · ${c.upsold} accounts` },
+      { label: 'Upsell %', value: pct(c.upsellPct), delta: deltaHtml(c.upsellPct, p.upsellPct), foot: `of starting MRR · ${pct(c.upsoldPct, 0)} of accounts grew` },
+    ];
+    document.getElementById('kpis').innerHTML = tiles.map((t) => `
+      <div class="tile${t.hero ? ' hero' : ''}">
+        <span class="label">${t.label}</span>
+        <span class="value">${t.value}</span>
+        <span class="foot">${t.delta}<span>vs prior period</span></span>
+        <span class="foot">${t.foot}</span>
+      </div>`).join('');
+  }
+
+  // ---------- Chart helpers ----------
+  function niceTicks(min, max, count = 4) {
+    const span = max - min || 1;
+    const raw = span / count;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map((f) => f * mag).find((st) => span / st <= count) || 10 * mag;
+    const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step;
+    const ticks = [];
+    for (let v = lo; v <= hi + step / 2; v += step) ticks.push(+v.toFixed(10));
+    return ticks;
+  }
+  // bar with 4px rounded top, square bottom
+  function barPath(x, y, w, h, r = 4) {
+    if (h <= 0) return '';
+    r = Math.min(r, h, w / 2);
+    return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+  }
+
+  // ---------- MRR bridge ----------
+  function renderBridge(m) {
+    const el = document.getElementById('bridge');
+    const W = Math.max(280, el.clientWidth), H = 250;
+    const pad = { l: 48, r: 8, t: 26, b: 30 };
+    const steps = [
+      { k: 'Starting', lo: 0, hi: m.start, v: m.start, c: 'var(--bar-neutral)', sign: '' },
+      { k: 'Upsell', lo: m.start, hi: m.start + m.exp, v: m.exp, c: 'var(--good)', sign: '+' },
+      { k: 'Contraction', lo: m.start + m.exp - m.con, hi: m.start + m.exp, v: m.con, c: 'var(--serious)', sign: '−' },
+      { k: 'Churn', lo: m.end, hi: m.end + m.churn, v: m.churn, c: 'var(--critical)', sign: '−' },
+      { k: 'Ending', lo: 0, hi: m.end, v: m.end, c: 'var(--bar-neutral)', sign: '' },
+    ];
+    const ticks = niceTicks(0, Math.max(...steps.map((d) => d.hi)) || 1);
+    const yMax = ticks[ticks.length - 1];
+    const y = (v) => pad.t + (H - pad.t - pad.b) * (1 - v / yMax);
+    const band = (W - pad.l - pad.r) / steps.length;
+    const bw = Math.min(40, band * 0.5);
+    let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="MRR bridge from ${money(m.start)} to ${money(m.end)}">`;
+    for (const t of ticks) {
+      svg += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--grid)" stroke-width="1"/>`;
+      svg += `<text x="${pad.l - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${money(t)}</text>`;
+    }
+    steps.forEach((d, i) => {
+      const cx = pad.l + band * i + band / 2, x = cx - bw / 2;
+      const top = y(d.hi), h = Math.max(d.v > 0 ? 2 : 0, y(d.lo) - y(d.hi));
+      const floating = d.lo > 0;
+      svg += floating
+        ? `<rect x="${x}" y="${top}" width="${bw}" height="${h}" rx="2" fill="${d.c}"/>`
+        : `<path d="${barPath(x, top, bw, h)}" fill="${d.c}"/>`;
+      if (i < steps.length - 1) {
+        const level = i === 0 ? d.hi : (d.k === 'Upsell' ? d.hi : d.lo);
+        const nx = pad.l + band * (i + 1) + band / 2 - bw / 2;
+        svg += `<line x1="${x + bw}" x2="${nx}" y1="${y(level)}" y2="${y(level)}" stroke="var(--axis)" stroke-width="1"/>`;
+      }
+      svg += `<text x="${cx}" y="${top - 7}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${d.sign}${money(d.v)}</text>`;
+      svg += `<text x="${cx}" y="${H - 10}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${d.k}</text>`;
+      svg += `<rect class="hit" data-i="${i}" x="${pad.l + band * i}" y="${pad.t - 20}" width="${band}" height="${H - pad.t - pad.b + 20}" fill="transparent"/>`;
+    });
+    svg += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--axis)" stroke-width="1"/></svg>`;
+    el.innerHTML = svg;
+    const notes = [
+      `${m.n} accounts paying at the start`,
+      `${m.upsold} accounts grew · ${pct(m.upsellPct)} of starting MRR`,
+      `Downgrades on accounts that stayed · ${pct(m.con / (m.start || 1))}`,
+      `${m.churned} accounts cancelled · ${pct(m.revChurn)} of starting MRR`,
+      `Same cohort at period end · NRR ${pct(m.nrr)}`,
+    ];
+    el.querySelectorAll('.hit').forEach((r) => {
+      const i = +r.dataset.i, d = steps[i];
+      r.addEventListener('pointermove', (ev) => showTip(
+        `<div class="t">${d.k === 'Starting' || d.k === 'Ending' ? d.k + ' MRR' : d.k}</div>
+         <div class="r"><span class="k"><i style="background:${d.c}"></i>MRR</span><b>${d.sign}${money(d.v)}</b></div>
+         <div class="r"><span>${notes[i]}</span></div>`, ev));
+      r.addEventListener('pointerleave', hideTip);
+    });
+  }
+
+  // ---------- Trailing-12-month trend ----------
+  function renderTrend(list) {
+    const el = document.getElementById('trend');
+    const pts = [];
+    for (let e = LAST - 11; e <= LAST; e++) { const m = metrics(list, e - 12, e); pts.push({ e, nrr: m.nrr, grr: m.grr, n: m.n }); }
+    const W = Math.max(280, el.clientWidth), H = 250;
+    const pad = { l: 44, r: 50, t: 16, b: 30 };
+    const vals = pts.flatMap((p) => [p.nrr, p.grr]).concat([1]);
+    const ticks = niceTicks(Math.min(...vals) * 100 - 2, Math.max(...vals) * 100 + 2, 4);
+    const lo = ticks[0], hi = ticks[ticks.length - 1];
+    const x = (i) => pad.l + (W - pad.l - pad.r) * i / (pts.length - 1);
+    const y = (v) => pad.t + (H - pad.t - pad.b) * (1 - (v * 100 - lo) / (hi - lo));
+    let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Trailing twelve month NRR and GRR by month">`;
+    for (const t of ticks) {
+      svg += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(t / 100)}" y2="${y(t / 100)}" stroke="var(--grid)" stroke-width="1"/>`;
+      svg += `<text x="${pad.l - 8}" y="${y(t / 100) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${t}%</text>`;
+    }
+    svg += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(1)}" y2="${y(1)}" stroke="var(--axis)" stroke-width="1"/>`;
+    const every = W < 420 ? 3 : 2;
+    pts.forEach((p, i) => {
+      if ((pts.length - 1 - i) % every === 0) svg += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="11" fill="var(--muted)">${monthShort(p.e)}</text>`;
+    });
+    const series = [{ key: 'nrr', c: 'var(--series-1)', label: 'NRR' }, { key: 'grr', c: 'var(--series-2)', label: 'GRR' }];
+    for (const s of series) {
+      const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p[s.key]).toFixed(1)}`).join('');
+      svg += `<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      const last = pts[pts.length - 1];
+      svg += `<circle cx="${x(pts.length - 1)}" cy="${y(last[s.key])}" r="4" fill="${s.c}" stroke="var(--surface)" stroke-width="2"/>`;
+      svg += `<text x="${x(pts.length - 1) + 9}" y="${y(last[s.key]) + 4}" font-size="12" font-weight="600" fill="var(--ink)">${pct(last[s.key], 0)}</text>`;
+    }
+    svg += `<g class="cross" visibility="hidden"><line y1="${pad.t}" y2="${H - pad.b}" stroke="var(--axis)" stroke-width="1"/>`
+         + series.map((s) => `<circle r="4" fill="${s.c}" stroke="var(--surface)" stroke-width="2" data-k="${s.key}"/>`).join('') + '</g>';
+    svg += `<rect class="hit" x="${pad.l - 10}" y="${pad.t}" width="${W - pad.l - pad.r + 20}" height="${H - pad.t - pad.b}" fill="transparent"/></svg>`;
+    el.innerHTML = svg;
+    const cross = el.querySelector('.cross'), line = cross.querySelector('line');
+    const hit = el.querySelector('.hit');
+    hit.addEventListener('pointermove', (ev) => {
+      const box = el.querySelector('svg').getBoundingClientRect();
+      const px = (ev.clientX - box.left) * (W / box.width);
+      const i = Math.max(0, Math.min(pts.length - 1, Math.round((px - pad.l) / (W - pad.l - pad.r) * (pts.length - 1))));
+      const p = pts[i];
+      cross.setAttribute('visibility', 'visible');
+      line.setAttribute('x1', x(i)); line.setAttribute('x2', x(i));
+      cross.querySelectorAll('circle').forEach((c) => { c.setAttribute('cx', x(i)); c.setAttribute('cy', y(p[c.dataset.k])); });
+      showTip(`<div class="t">12 months to ${monthName(p.e)}</div>` +
+        series.map((s) => `<div class="r"><span class="k"><i style="background:${s.c}"></i>${s.label}</span><b>${pct(p[s.key])}</b></div>`).join('') +
+        `<div class="r"><span>Starting cohort</span><b>${p.n}</b></div>`, ev);
+    });
+    hit.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); hideTip(); });
+  }
+
+  // ---------- Breakdown table ----------
+  function nrrBar(v) {
+    const lo = 0.7, hi = 1.3, w = 84, h = 8;
+    const clamp = (t) => Math.max(lo, Math.min(hi, t));
+    const sx = (t) => (clamp(t) - lo) / (hi - lo) * w;
+    const x0 = sx(1), x1 = sx(v);
+    const c = v >= 1 ? 'var(--div-pos)' : 'var(--div-neg)';
+    return `<svg width="${w}" height="${h + 4}" aria-hidden="true">
+      <rect x="0" y="2" width="${w}" height="${h}" rx="2" fill="var(--mid)"/>
+      <rect x="${Math.min(x0, x1)}" y="2" width="${Math.max(1, Math.abs(x1 - x0))}" height="${h}" fill="${c}"/>
+      <line x1="${x0}" x2="${x0}" y1="0" y2="${h + 4}" stroke="var(--ink-2)" stroke-width="1"/></svg>`;
+  }
+
+  function renderTable(s, e) {
+    const dim = state.dim;
+    document.getElementById('dimHead').textContent = DIMS[dim];
+    const groups = [...new Set(accounts.map((a) => a[dim]))];
+    const rows = groups.map((g) => ({ g, m: metrics(accounts.filter((a) => a[dim] === g), s, e) }))
+      .filter((r) => r.m.n > 0)
+      .sort((a, b) => b.m.start - a.m.start);
+    const tr = (name, m, attrs = '') => `
+      <tr ${attrs}>
+        <td class="seg-name">${esc(name)}<span class="n">${m.n} accts</span></td>
+        <td>${money(m.start)}</td>
+        <td><span class="nrr-cell">${nrrBar(m.nrr)}<span class="v">${pct(m.nrr)}</span></span></td>
+        <td>${m.grr < 0.9 ? '<span class="flag bad" title="GRR below 90%">▼ &lt;90%</span> ' : ''}${pct(m.grr)}</td>
+        <td>${pct(m.logoChurn)}</td>
+        <td>${pct(m.revChurn)}</td>
+        <td>${money(m.exp)}</td>
+        <td>${pct(m.upsellPct)}</td>
+        <td>${pct(m.upsoldPct, 0)}</td>
+      </tr>`;
+    const tbody = document.getElementById('rows');
+    tbody.innerHTML = rows.map((r) => {
+      const on = state.focus && state.focus.dim === dim && state.focus.value === r.g;
+      return tr(r.g, r.m, `tabindex="0" data-g="${esc(r.g)}" class="${on ? 'focused' : ''}" aria-selected="${on}"`);
+    }).join('');
+    document.getElementById('total').innerHTML = tr('All accounts', metrics(accounts, s, e));
+    tbody.querySelectorAll('tr').forEach((row) => {
+      const choose = () => {
+        const g = row.dataset.g;
+        const same = state.focus && state.focus.dim === dim && state.focus.value === g;
+        state.focus = same ? null : { dim, value: g };
+        render();
+      };
+      row.addEventListener('click', choose);
+      row.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); choose(); } });
+    });
+  }
+
+  // ---------- Wiring ----------
+  document.querySelectorAll('#periodSeg button').forEach((b) => b.addEventListener('click', () => {
+    state.period = +b.dataset.p; store.set('period', state.period); render();
+  }));
+  document.querySelectorAll('#dimSeg button').forEach((b) => b.addEventListener('click', () => {
+    state.dim = b.dataset.d; store.set('dim', state.dim); render();
+  }));
+  let rt;
+  new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => {
+    const list = scoped(), P = state.period;
+    renderBridge(metrics(list, LAST - P, LAST)); renderTrend(list);
+  }, 60); }).observe(document.getElementById('trend'));
+
+  render();
+})();
+</script>
+</body>
+</html>
